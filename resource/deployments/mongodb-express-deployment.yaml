@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-express-deployment
+  namespace: default
+  labels:
+    app: mongodb-express
+    tier: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb-express
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: mongodb-express
+        tier: frontend
+    spec:
+      # Node selector to place MongoDB Express on frontend tier worker
+      nodeSelector:
+        tier: frontend
+      containers:
+      - name: mongodb-express
+        image: mongo-express:1.0.0-alpha
+        ports:
+        - containerPort: 8081
+          name: http
+        env:
+        # MongoDB connection settings
+        - name: ME_CONFIG_MONGODB_SERVER
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb-configmap
+              key: me-config-mongodb-server
+        - name: ME_CONFIG_MONGODB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb-configmap
+              key: me-config-mongodb-port
+        - name: ME_CONFIG_MONGODB_AUTH_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb-configmap
+              key: me-config-mongodb-auth-database
+        # MongoDB credentials
+        - name: ME_CONFIG_MONGODB_AUTH_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongodb-username
+        - name: ME_CONFIG_MONGODB_AUTH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongodb-root-password
+        # Basic auth for web interface
+        - name: ME_CONFIG_BASICAUTH_USERNAME
+          value: "admin"
+        - name: ME_CONFIG_BASICAUTH_PASSWORD
+          value: "SOWXBL6xrstXR8NY"
+        # Site configuration
+        - name: ME_CONFIG_SITE_BASEURL
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb-configmap
+              key: me-config-site-baseurl
+        # Resource limits
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "300m"
+        # Health checks
+        livenessProbe:
+          tcpSocket:
+            port: 8081
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 8081
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+      # Wait for MongoDB to be ready
+      initContainers:
+      - name: wait-for-mongodb
+        image: busybox:1.35
+        command: ['sh', '-c']
+        args:
+          - |
+            echo "Waiting for MongoDB to be ready..."
+            until nc -z mongodb-service 27017; do
+              echo "MongoDB not ready, waiting..."
+              sleep 2
+            done
+            echo "MongoDB is ready!"

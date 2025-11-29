@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+  namespace: default
+  labels:
+    app: mongodb
+    tier: database
+spec:
+  type: ClusterIP
+  selector:
+    app: mongodb
+    tier: database
+  ports:
+  - name: mongodb
+    protocol: TCP
+    port: 27017
+    targetPort: 27017
+
+---
+# NodePort service for external access to MongoDB
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-nodeport
+  namespace: default
+  labels:
+    app: mongodb
+    tier: database
+    service-type: external
+spec:
+  type: NodePort
+  selector:
+    app: mongodb
+    tier: database
+  ports:
+  - name: mongodb
+    protocol: TCP
+    port: 27017
+    targetPort: 27017
+    nodePort: 30017

@@ -1,0 +1,17 @@
+# Encrypted credentials directory - NEVER commit these files
+.credentials/
+*.key
+*.enc
+
+# Temporary files
+*.bak
+*.tmp
+
+# macOS files
+.DS_Store
+
+# Log files
+*.log
+
+# Backup directories
+credentials_backup_*/

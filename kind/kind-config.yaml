@@ -1,0 +1,33 @@
+apiVersion: kind.x-k8s.io/v1alpha4
+kind: Cluster
+name: mongodb-web-cluster
+nodes:
+# Control plane node
+- role: control-plane
+  extraPortMappings:
+  # MongoDB port mapping
+  - containerPort: 30017
+    hostPort: 27017
+    listenAddress: "0.0.0.0"
+    protocol: TCP
+  # MongoDB Express port mapping
+  - containerPort: 30081
+    hostPort: 8081
+    listenAddress: "0.0.0.0"
+    protocol: TCP
+  # Additional port for future services
+  - containerPort: 30080
+    hostPort: 8080
+    listenAddress: "0.0.0.0"
+    protocol: TCP
+
+# Worker nodes
+- role: worker
+  labels:
+    node-type: worker
+    tier: database
+
+- role: worker
+  labels:
+    node-type: worker
+    tier: frontend
