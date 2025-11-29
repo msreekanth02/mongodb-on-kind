@@ -86,7 +86,7 @@ ask_yes_no() {
 # Function to display main menu
 show_main_menu() {
     clear
-    print_header "🎓 MONGODB ON KIND - KUBERNETES LEARNING LAB 🎓"
+    print_header "MONGODB ON KIND - KUBERNETES LEARNING LAB"
     
     echo -e "${GREEN}Welcome to the MongoDB on Kind Interactive Learning Environment!${NC}"
     echo
@@ -96,34 +96,34 @@ show_main_menu() {
     echo "• Practice kubectl commands in a safe environment"
     echo "• Understand container orchestration concepts"
     echo
-    echo -e "${CYAN}${BOLD}📚 MAIN MENU:${NC}"
+    echo -e "${CYAN}${BOLD}MAIN MENU:${NC}"
     echo
-    echo -e "${BOLD} 1)${NC} 🚀 Quick Start - Deploy Everything (Recommended for beginners)"
-    echo -e "${BOLD} 2)${NC} 📖 Learning Mode - Step-by-step guided deployment"
-    echo -e "${BOLD} 3)${NC} 🔧 Management Tools - Manage existing deployment"
-    echo -e "${BOLD} 4)${NC} 🔍 Monitoring & Logs - View cluster status and logs"
-    echo -e "${BOLD} 5)${NC} 🔐 Security Lab - Learn credential management"
-    echo -e "${BOLD} 6)${NC} 🧪 Kubernetes Playground - Practice kubectl commands"
-    echo -e "${BOLD} 7)${NC} 📚 Learning Resources - Tutorials and documentation"
-    echo -e "${BOLD} 8)${NC} 🧹 Cleanup - Remove deployment and cluster"
-    echo -e "${BOLD} 9)${NC} ❓ Help & Troubleshooting"
-    echo -e "${BOLD}10)${NC} 🚪 Exit"
+    echo -e "${BOLD} 1)${NC} Quick Start - Deploy Everything (Recommended for beginners)"
+    echo -e "${BOLD} 2)${NC} Learning Mode - Step-by-step guided deployment"
+    echo -e "${BOLD} 3)${NC} Management Tools - Manage existing deployment"
+    echo -e "${BOLD} 4)${NC} Monitoring & Logs - View cluster status and logs"
+    echo -e "${BOLD} 5)${NC} Security Lab - Learn credential management"
+    echo -e "${BOLD} 6)${NC} Kubernetes Playground - Practice kubectl commands"
+    echo -e "${BOLD} 7)${NC} Learning Resources - Tutorials and documentation"
+    echo -e "${BOLD} 8)${NC} Cleanup - Remove deployment and cluster"
+    echo -e "${BOLD} 9)${NC} Help & Troubleshooting"
+    echo -e "${BOLD}10)${NC} Exit"
     echo
     echo -e "${YELLOW}Choose an option [1-10]: ${NC}\c"
 }
 
 # Function for Quick Start
 quick_start() {
-    print_header "🚀 QUICK START - AUTOMATED DEPLOYMENT"
+    print_header "QUICK START - AUTOMATED DEPLOYMENT"
     
     print_info "This will automatically deploy a complete MongoDB cluster for you!"
     echo
     echo "What you'll get:"
-    echo "• ✅ Kind Kubernetes cluster (3 nodes)"
-    echo "• ✅ MongoDB database with persistent storage"
-    echo "• ✅ MongoDB Express web interface"
-    echo "• ✅ Secure encrypted credentials"
-    echo "• ✅ All services configured and ready to use"
+    echo "• Kind Kubernetes cluster (3 nodes)"
+    echo "• MongoDB database with persistent storage"
+    echo "• MongoDB Express web interface"
+    echo "• Secure encrypted credentials"
+    echo "• All services configured and ready to use"
     echo
     
     if ask_yes_no "Ready to deploy? This will take 2-3 minutes"; then
@@ -171,20 +171,20 @@ quick_start() {
 
 # Function for Learning Mode
 learning_mode() {
-    print_header "📖 LEARNING MODE - STEP-BY-STEP DEPLOYMENT"
+    print_header "LEARNING MODE - STEP-BY-STEP DEPLOYMENT"
     
     echo -e "${GREEN}Welcome to Learning Mode!${NC}"
     echo
     echo "In this mode, you'll learn Kubernetes concepts step by step:"
     echo
     echo -e "${BOLD}Learning Path:${NC}"
-    echo "1. 🏗️  Understanding Kubernetes Architecture"
-    echo "2. 🔧 Creating a Kind Cluster" 
-    echo "3. 🗄️  Setting up Storage"
-    echo "4. 🔐 Managing Secrets and ConfigMaps"
-    echo "5. 🚀 Deploying Applications"
-    echo "6. 🌐 Exposing Services"
-    echo "7. 📊 Monitoring and Troubleshooting"
+    echo "1. Understanding Kubernetes Architecture"
+    echo "2. Creating a Kind Cluster" 
+    echo "3. Setting up Storage"
+    echo "4. Managing Secrets and ConfigMaps"
+    echo "5. Deploying Applications"
+    echo "6. Exposing Services"
+    echo "7. Monitoring and Troubleshooting"
     echo
     
     if ask_yes_no "Start the learning journey"; then
@@ -194,23 +194,23 @@ learning_mode() {
 
 # Learning Steps
 learning_step_1_architecture() {
-    print_header "📚 STEP 1: KUBERNETES ARCHITECTURE"
+    print_header "STEP 1: KUBERNETES ARCHITECTURE"
     
     echo -e "${GREEN}Let's understand what Kubernetes is and how it works:${NC}"
     echo
-    echo -e "${BOLD}🏗️ Kubernetes Components:${NC}"
-    echo "• 🎛️  Control Plane: The brain that manages the cluster"
-    echo "• 👷 Worker Nodes: Machines that run your applications"
-    echo "• 📦 Pods: Smallest deployable units (containers)"
-    echo "• 🌐 Services: Expose applications to network traffic"
-    echo "• 💾 Volumes: Persistent storage for data"
-    echo "• 🔐 Secrets: Secure storage for sensitive information"
+    echo -e "${BOLD}Kubernetes Components:${NC}"
+    echo "• •  Control Plane: The brain that manages the cluster"
+    echo "• • Worker Nodes: Machines that run your applications"
+    echo "• • Pods: Smallest deployable units (containers)"
+    echo "• • Services: Expose applications to network traffic"
+    echo "• • Volumes: Persistent storage for data"
+    echo "• • Secrets: Secure storage for sensitive information"
     echo
-    echo -e "${BOLD}🐳 What is Kind?${NC}"
+    echo -e "${BOLD}• What is Kind?${NC}"
     echo "Kind (Kubernetes in Docker) runs a Kubernetes cluster inside Docker containers."
     echo "Perfect for learning and testing without complex setup!"
     echo
-    echo -e "${BOLD}📋 Our Architecture:${NC}"
+    echo -e "${BOLD}• Our Architecture:${NC}"
     echo "┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐"
     echo "│  Control Plane  │  │   Worker Node   │  │   Worker Node   │"
     echo "│   (Manager)     │  │  (Database)     │  │   (Frontend)    │"
@@ -225,16 +225,16 @@ learning_step_1_architecture() {
 }
 
 learning_step_2_cluster() {
-    print_header "🔧 STEP 2: CREATING A KIND CLUSTER"
+    print_header "STEP 2: CREATING A KIND CLUSTER"
     
     echo -e "${GREEN}Now let's create your Kubernetes cluster!${NC}"
     echo
-    echo -e "${BOLD}🎯 Learning Objectives:${NC}"
+    echo -e "${BOLD}Learning Objectives:${NC}"
     echo "• Understand cluster configuration"
     echo "• Learn about node roles and labels"
     echo "• See how port mapping works"
     echo
-    echo -e "${BOLD}📝 Cluster Configuration:${NC}"
+    echo -e "${BOLD}Cluster Configuration:${NC}"
     echo "We'll create:"
     echo "• 1 Control Plane node (manages the cluster)"
     echo "• 2 Worker nodes (run applications)"
@@ -259,7 +259,7 @@ learning_step_2_cluster() {
         echo
         print_step "Let's explore what was created..."
         echo
-        echo -e "${BOLD}🔍 Try these commands:${NC}"
+        echo -e "${BOLD}Try these commands:${NC}"
         echo "kubectl get nodes         # See all nodes in cluster"
         echo "kubectl cluster-info      # Get cluster information"
         echo
@@ -277,19 +277,19 @@ learning_step_2_cluster() {
 }
 
 learning_step_3_storage() {
-    print_header "🗄️ STEP 3: SETTING UP PERSISTENT STORAGE"
+    print_header "STEP 3: SETTING UP PERSISTENT STORAGE"
     
     echo -e "${GREEN}Databases need persistent storage to keep data safe!${NC}"
     echo
-    echo -e "${BOLD}🎯 Learning Objectives:${NC}"
+    echo -e "${BOLD}Learning Objectives:${NC}"
     echo "• Understand persistent volumes"
     echo "• Learn about storage classes"
     echo "• See how claims work"
     echo
-    echo -e "${BOLD}📚 Storage Concepts:${NC}"
-    echo "• 💾 PersistentVolume (PV): Actual storage space"
-    echo "• 📋 PersistentVolumeClaim (PVC): Request for storage"
-    echo "• 🏷️  StorageClass: Type/quality of storage"
+    echo -e "${BOLD}Storage Concepts:${NC}"
+    echo "• • PersistentVolume (PV): Actual storage space"
+    echo "• • PersistentVolumeClaim (PVC): Request for storage"
+    echo "•   StorageClass: Type/quality of storage"
     echo
     
     if ask_yes_no "View the storage configuration"; then
@@ -321,19 +321,19 @@ learning_step_3_storage() {
 }
 
 learning_step_4_secrets() {
-    print_header "🔐 STEP 4: MANAGING SECRETS AND CONFIGURATION"
+    print_header "STEP 4: MANAGING SECRETS AND CONFIGURATION"
     
     echo -e "${GREEN}Applications need configuration and secure credentials!${NC}"
     echo
-    echo -e "${BOLD}🎯 Learning Objectives:${NC}"
+    echo -e "${BOLD}Learning Objectives:${NC}"
     echo "• Understand Kubernetes secrets"
     echo "• Learn about ConfigMaps"
     echo "• See base64 encoding"
     echo
-    echo -e "${BOLD}📚 Security Concepts:${NC}"
-    echo "• 🔐 Secrets: Store sensitive data (passwords, tokens)"
-    echo "• 📋 ConfigMaps: Store configuration data"
-    echo "• 🔒 Base64: Encoding (not encryption!) for secrets"
+    echo -e "${BOLD}Security Concepts:${NC}"
+    echo "• • Secrets: Store sensitive data (passwords, tokens)"
+    echo "• • ConfigMaps: Store configuration data"
+    echo "• Base64: Encoding (not encryption!) for secrets"
     echo
     
     if ask_yes_no "Initialize encrypted credentials"; then
@@ -375,20 +375,20 @@ learning_step_4_secrets() {
 }
 
 learning_step_5_deployment() {
-    print_header "🚀 STEP 5: DEPLOYING APPLICATIONS"
+    print_header "STEP 5: DEPLOYING APPLICATIONS"
     
     echo -e "${GREEN}Now let's deploy MongoDB and MongoDB Express!${NC}"
     echo
-    echo -e "${BOLD}🎯 Learning Objectives:${NC}"
+    echo -e "${BOLD}Learning Objectives:${NC}"
     echo "• Understand Deployments"
     echo "• Learn about pods and containers"
     echo "• See health checks and init containers"
     echo
-    echo -e "${BOLD}📚 Deployment Concepts:${NC}"
-    echo "• 🚀 Deployment: Manages application replicas"
-    echo "• 📦 Pod: Runs one or more containers"
-    echo "• ❤️  Health Checks: Monitor application health"
-    echo "• 🔄 Init Containers: Setup before main container"
+    echo -e "${BOLD}Deployment Concepts:${NC}"
+    echo "• Deployment: Manages application replicas"
+    echo "• • Pod: Runs one or more containers"
+    echo "•   Health Checks: Monitor application health"
+    echo "• Init Containers: Setup before main container"
     echo
     
     print_step "Deploying MongoDB..."
@@ -422,20 +422,20 @@ learning_step_5_deployment() {
 }
 
 learning_step_6_services() {
-    print_header "🌐 STEP 6: EXPOSING SERVICES"
+    print_header "STEP 6: EXPOSING SERVICES"
     
     echo -e "${GREEN}Applications need to be accessible over the network!${NC}"
     echo
-    echo -e "${BOLD}🎯 Learning Objectives:${NC}"
+    echo -e "${BOLD}Learning Objectives:${NC}"
     echo "• Understand Kubernetes services"
     echo "• Learn about service types"
     echo "• See load balancing in action"
     echo
-    echo -e "${BOLD}📚 Service Concepts:${NC}"
-    echo "• 🏠 ClusterIP: Internal cluster communication"
-    echo "• 🌐 NodePort: External access via node ports"
-    echo "• ⚖️  LoadBalancer: Cloud load balancer"
-    echo "• 🔗 Ingress: HTTP/HTTPS routing"
+    echo -e "${BOLD}Service Concepts:${NC}"
+    echo "•  ClusterIP: Internal cluster communication"
+    echo "• • NodePort: External access via node ports"
+    echo "•   LoadBalancer: Cloud load balancer"
+    echo "•  Ingress: HTTP/HTTPS routing"
     echo
     
     print_step "Creating services..."
@@ -453,14 +453,14 @@ learning_step_6_services() {
     MONGOEXPRESS_PORT=$(kubectl get service mongodb-express-nodeport -o jsonpath='{.spec.ports[0].nodePort}')
     
     echo
-    print_success "🎉 Deployment Complete! Your services are ready:"
+    print_success " Deployment Complete! Your services are ready:"
     echo
-    echo -e "${BOLD}📱 MongoDB Express Web UI:${NC}"
+    echo -e "${BOLD} MongoDB Express Web UI:${NC}"
     echo "   URL: http://localhost:8081"
     echo "   Username: admin"
     echo "   Password: Run './scripts/manage-credentials.sh --get webui_password'"
     echo
-    echo -e "${BOLD}🗄️ MongoDB Database:${NC}"
+    echo -e "${BOLD} MongoDB Database:${NC}"
     echo "   Host: localhost:27017"
     echo "   Username: admin"
     echo "   Password: Run './scripts/manage-credentials.sh --get mongodb_root_password'"
@@ -474,16 +474,16 @@ learning_step_6_services() {
 }
 
 learning_step_7_monitoring() {
-    print_header "📊 STEP 7: MONITORING AND TROUBLESHOOTING"
+    print_header "STEP 7: MONITORING AND TROUBLESHOOTING"
     
     echo -e "${GREEN}Let's learn how to monitor and debug Kubernetes applications!${NC}"
     echo
-    echo -e "${BOLD}🎯 Learning Objectives:${NC}"
+    echo -e "${BOLD}Learning Objectives:${NC}"
     echo "• Monitor pod and service status"
     echo "• View application logs"
     echo "• Debug common issues"
     echo
-    echo -e "${BOLD}📚 Monitoring Commands:${NC}"
+    echo -e "${BOLD}Monitoring Commands:${NC}"
     echo "• kubectl get pods      # See pod status"
     echo "• kubectl describe pod  # Detailed pod info"
     echo "• kubectl logs         # View container logs"
@@ -523,16 +523,16 @@ learning_step_7_monitoring() {
         kubectl exec -it $MONGO_POD -- mongosh --eval "db.runCommand({ping: 1})"
     fi
     
-    print_success "🎓 Congratulations! You've completed the Kubernetes learning journey!"
+    print_success "Congratulations! You've completed the Kubernetes learning journey!"
     echo
     echo -e "${BOLD}What you've learned:${NC}"
-    echo "✅ Kubernetes architecture and components"
-    echo "✅ Creating and managing clusters with Kind"
-    echo "✅ Persistent storage with PVs and PVCs"
-    echo "✅ Secrets and configuration management"
-    echo "✅ Application deployment with pods and services"
-    echo "✅ Network exposure and service types"
-    echo "✅ Monitoring and troubleshooting techniques"
+    echo "Kubernetes architecture and components"
+    echo "Creating and managing clusters with Kind"
+    echo "Persistent storage with PVs and PVCs"
+    echo "Secrets and configuration management"
+    echo "Application deployment with pods and services"
+    echo "Network exposure and service types"
+    echo "Monitoring and troubleshooting techniques"
     echo
     pause
 }
@@ -540,16 +540,16 @@ learning_step_7_monitoring() {
 # Management Tools Menu
 management_menu() {
     while true; do
-        print_header "🔧 MANAGEMENT TOOLS"
+        print_header "MANAGEMENT TOOLS"
         
         echo -e "${BOLD}Management Options:${NC}"
         echo
-        echo -e "${BOLD}1)${NC} 📊 View Cluster Status"
-        echo -e "${BOLD}2)${NC} 🔄 Scale Applications"
-        echo -e "${BOLD}3)${NC} 🔄 Restart Services"
-        echo -e "${BOLD}4)${NC} 💾 Backup Data"
-        echo -e "${BOLD}5)${NC} 🔄 Update Configuration"
-        echo -e "${BOLD}6)${NC} 🔙 Back to Main Menu"
+        echo -e "${BOLD}1)${NC} View Cluster Status"
+        echo -e "${BOLD}2)${NC} Scale Applications"
+        echo -e "${BOLD}3)${NC} Restart Services"
+        echo -e "${BOLD}4)${NC} • Backup Data"
+        echo -e "${BOLD}5)${NC} Update Configuration"
+        echo -e "${BOLD}6)${NC} Back to Main Menu"
         echo
         echo -e "${YELLOW}Choose an option [1-6]: ${NC}\c"
         
@@ -569,17 +569,17 @@ management_menu() {
 # Monitoring Menu
 monitoring_menu() {
     while true; do
-        print_header "🔍 MONITORING & LOGS"
+        print_header "MONITORING & LOGS"
         
         echo -e "${BOLD}Monitoring Options:${NC}"
         echo
-        echo -e "${BOLD}1)${NC} 📊 Cluster Overview"
-        echo -e "${BOLD}2)${NC} 📋 Pod Status & Details"
-        echo -e "${BOLD}3)${NC} 📜 View Application Logs"
-        echo -e "${BOLD}4)${NC} 🌐 Service Status"
-        echo -e "${BOLD}5)${NC} 💾 Storage Information"
-        echo -e "${BOLD}6)${NC} 🔍 Real-time Monitoring"
-        echo -e "${BOLD}7)${NC} 🔙 Back to Main Menu"
+        echo -e "${BOLD}1)${NC} Cluster Overview"
+        echo -e "${BOLD}2)${NC} • Pod Status & Details"
+        echo -e "${BOLD}3)${NC} View Application Logs"
+        echo -e "${BOLD}4)${NC} • Service Status"
+        echo -e "${BOLD}5)${NC} • Storage Information"
+        echo -e "${BOLD}6)${NC} Real-time Monitoring"
+        echo -e "${BOLD}7)${NC} Back to Main Menu"
         echo
         echo -e "${YELLOW}Choose an option [1-7]: ${NC}\c"
         
@@ -600,17 +600,17 @@ monitoring_menu() {
 # Security Lab Menu  
 security_menu() {
     while true; do
-        print_header "🔐 SECURITY LAB"
+        print_header "• SECURITY LAB"
         
         echo -e "${BOLD}Security Learning Options:${NC}"
         echo
-        echo -e "${BOLD}1)${NC} 🔑 View Encrypted Credentials"
-        echo -e "${BOLD}2)${NC} 🔄 Rotate Passwords"
-        echo -e "${BOLD}3)${NC} 💾 Backup Credentials"
-        echo -e "${BOLD}4)${NC} 🔍 Security Best Practices"
-        echo -e "${BOLD}5)${NC} 🧪 Test Authentication"
-        echo -e "${BOLD}6)${NC} 📚 Learn About Kubernetes Security"
-        echo -e "${BOLD}7)${NC} 🔙 Back to Main Menu"
+        echo -e "${BOLD}1)${NC} View Encrypted Credentials"
+        echo -e "${BOLD}2)${NC} Rotate Passwords"
+        echo -e "${BOLD}3)${NC} • Backup Credentials"
+        echo -e "${BOLD}4)${NC} Security Best Practices"
+        echo -e "${BOLD}5)${NC} Test Authentication"
+        echo -e "${BOLD}6)${NC} Learn About Kubernetes Security"
+        echo -e "${BOLD}7)${NC} Back to Main Menu"
         echo
         echo -e "${YELLOW}Choose an option [1-7]: ${NC}\c"
         
@@ -631,18 +631,18 @@ security_menu() {
 # Playground Menu
 playground_menu() {
     while true; do
-        print_header "🧪 KUBERNETES PLAYGROUND"
+        print_header "KUBERNETES PLAYGROUND"
         
         echo -e "${BOLD}Practice kubectl Commands:${NC}"
         echo
-        echo -e "${BOLD}1)${NC} 📋 Basic kubectl Commands"
-        echo -e "${BOLD}2)${NC} 🔍 Exploring Resources"
-        echo -e "${BOLD}3)${NC} 🚀 Deployment Operations"
-        echo -e "${BOLD}4)${NC} 🌐 Service Management"
-        echo -e "${BOLD}5)${NC} 🐛 Debugging Techniques"
-        echo -e "${BOLD}6)${NC} 💡 Advanced Operations"
-        echo -e "${BOLD}7)${NC} 🎯 Practice Scenarios"
-        echo -e "${BOLD}8)${NC} 🔙 Back to Main Menu"
+        echo -e "${BOLD}1)${NC} • Basic kubectl Commands"
+        echo -e "${BOLD}2)${NC} Exploring Resources"
+        echo -e "${BOLD}3)${NC} Deployment Operations"
+        echo -e "${BOLD}4)${NC} • Service Management"
+        echo -e "${BOLD}5)${NC}  Debugging Techniques"
+        echo -e "${BOLD}6)${NC} Advanced Operations"
+        echo -e "${BOLD}7)${NC} Practice Scenarios"
+        echo -e "${BOLD}8)${NC} Back to Main Menu"
         echo
         echo -e "${YELLOW}Choose an option [1-8]: ${NC}\c"
         
@@ -663,7 +663,7 @@ playground_menu() {
 
 # Show access information
 show_access_info() {
-    echo -e "${BOLD}🌐 Access Your Applications:${NC}"
+    echo -e "${BOLD}• Access Your Applications:${NC}"
     echo
     echo -e "${GREEN}MongoDB Express Web UI:${NC}"
     echo "  URL: http://localhost:8081"
@@ -679,13 +679,13 @@ show_access_info() {
 
 # Implementation stubs for menu functions (to be expanded)
 view_status() {
-    print_subheader "📊 CLUSTER STATUS"
+    print_subheader "CLUSTER STATUS"
     "$SCRIPT_DIR/status.sh"
     pause
 }
 
 scale_applications() {
-    print_subheader "🔄 SCALE APPLICATIONS"
+    print_subheader "SCALE APPLICATIONS"
     echo "Current deployments:"
     kubectl get deployments
     echo
@@ -707,7 +707,7 @@ scale_applications() {
 }
 
 restart_services() {
-    print_subheader "🔄 RESTART SERVICES"
+    print_subheader "RESTART SERVICES"
     echo "Available restart options:"
     echo "1) Restart MongoDB Express"
     echo "2) Restart MongoDB (careful - may cause downtime)"
@@ -738,7 +738,7 @@ restart_services() {
 }
 
 backup_data() {
-    print_subheader "💾 BACKUP DATA"
+    print_subheader "• BACKUP DATA"
     if ask_yes_no "Create MongoDB backup"; then
         print_step "Creating MongoDB backup..."
         MONGO_POD=$(kubectl get pods -l app=mongodb -o jsonpath='{.items[0].metadata.name}')
@@ -760,7 +760,7 @@ backup_data() {
 }
 
 update_configuration() {
-    print_subheader "🔄 UPDATE CONFIGURATION"
+    print_subheader "UPDATE CONFIGURATION"
     echo "Configuration update options:"
     echo "1) Update MongoDB ConfigMap"
     echo "2) Regenerate credentials" 
@@ -789,7 +789,7 @@ update_configuration() {
 }
 
 cluster_overview() {
-    print_subheader "📊 CLUSTER OVERVIEW"
+    print_subheader "CLUSTER OVERVIEW"
     echo "Nodes:"
     kubectl get nodes -o wide
     echo
@@ -802,7 +802,7 @@ cluster_overview() {
 }
 
 pod_details() {
-    print_subheader "📋 POD DETAILS"
+    print_subheader "• POD DETAILS"
     kubectl get pods -o wide
     echo
     echo -e "${YELLOW}Enter pod name to describe (or press Enter for all): ${NC}\c"
@@ -818,7 +818,7 @@ pod_details() {
 }
 
 view_logs() {
-    print_subheader "📜 APPLICATION LOGS"
+    print_subheader "APPLICATION LOGS"
     echo "Available log options:"
     echo "1) MongoDB logs"
     echo "2) MongoDB Express logs" 
@@ -850,7 +850,7 @@ view_logs() {
 }
 
 service_status() {
-    print_subheader "🌐 SERVICE STATUS"
+    print_subheader "• SERVICE STATUS"
     echo "Services:"
     kubectl get services -o wide
     echo
@@ -873,7 +873,7 @@ service_status() {
 }
 
 storage_info() {
-    print_subheader "💾 STORAGE INFORMATION"
+    print_subheader "• STORAGE INFORMATION"
     echo "Persistent Volumes:"
     kubectl get pv
     echo
@@ -891,7 +891,7 @@ storage_info() {
 }
 
 realtime_monitoring() {
-    print_subheader "🔍 REAL-TIME MONITORING"
+    print_subheader "REAL-TIME MONITORING"
     echo "Real-time monitoring options:"
     echo "1) Watch pod status"
     echo "2) Watch service status"
@@ -914,7 +914,7 @@ realtime_monitoring() {
 }
 
 view_credentials() {
-    print_subheader "🔑 ENCRYPTED CREDENTIALS"
+    print_subheader "ENCRYPTED CREDENTIALS"
     if ask_yes_no "Show decrypted credentials? (Use carefully!)"; then
         "$SCRIPT_DIR/manage-credentials.sh" --show
     fi
@@ -928,7 +928,7 @@ view_credentials() {
 }
 
 rotate_passwords() {
-    print_subheader "🔄 ROTATE PASSWORDS"
+    print_subheader "ROTATE PASSWORDS"
     if ask_yes_no "This will generate new passwords and restart services. Continue"; then
         print_step "Generating new credentials..."
         "$SCRIPT_DIR/manage-credentials.sh" --init
@@ -947,7 +947,7 @@ rotate_passwords() {
 }
 
 backup_credentials() {
-    print_subheader "💾 BACKUP CREDENTIALS"
+    print_subheader "• BACKUP CREDENTIALS"
     echo -e "${YELLOW}Enter backup directory (or press Enter for default): ${NC}\c"
     read -r backup_dir
     
@@ -960,30 +960,30 @@ backup_credentials() {
 }
 
 security_best_practices() {
-    print_subheader "🔍 SECURITY BEST PRACTICES"
+    print_subheader "SECURITY BEST PRACTICES"
     echo -e "${BOLD}Kubernetes Security Best Practices:${NC}"
     echo
-    echo "1. 🔐 Use secrets for sensitive data (passwords, tokens)"
-    echo "2. 🚫 Never hardcode credentials in images or configs"
-    echo "3. 🔒 Enable RBAC (Role-Based Access Control)"
-    echo "4. 🌐 Use network policies to restrict traffic"
-    echo "5. 🔄 Regularly rotate credentials"
-    echo "6. 📊 Monitor and audit cluster activities"
-    echo "7. 🛡️  Keep Kubernetes and containers updated"
-    echo "8. 🔍 Use admission controllers for policy enforcement"
+    echo "1. • Use secrets for sensitive data (passwords, tokens)"
+    echo "2. Never hardcode credentials in images or configs"
+    echo "3. Enable RBAC (Role-Based Access Control)"
+    echo "4. • Use network policies to restrict traffic"
+    echo "5. Regularly rotate credentials"
+    echo "6. Monitor and audit cluster activities"
+    echo "7.  Keep Kubernetes and containers updated"
+    echo "8. Use admission controllers for policy enforcement"
     echo
     echo -e "${BOLD}This Project's Security Features:${NC}"
-    echo "✅ Encrypted credential storage"
-    echo "✅ No hardcoded passwords"
-    echo "✅ Kubernetes secrets for runtime credentials"
-    echo "✅ Base64 encoding for Kubernetes secrets"
-    echo "✅ Separate encryption keys"
-    echo "✅ .gitignore protection"
+    echo "Encrypted credential storage"
+    echo "No hardcoded passwords"
+    echo "Kubernetes secrets for runtime credentials"
+    echo "Base64 encoding for Kubernetes secrets"
+    echo "Separate encryption keys"
+    echo ".gitignore protection"
     pause
 }
 
 test_authentication() {
-    print_subheader "🧪 TEST AUTHENTICATION"
+    print_subheader "TEST AUTHENTICATION"
     print_step "Testing MongoDB authentication..."
     
     ROOT_PASSWORD=$("$SCRIPT_DIR/manage-credentials.sh" --get mongodb_root_password)
@@ -1008,7 +1008,7 @@ test_authentication() {
 }
 
 security_education() {
-    print_subheader "📚 KUBERNETES SECURITY EDUCATION"
+    print_subheader "KUBERNETES SECURITY EDUCATION"
     echo -e "${BOLD}Understanding Kubernetes Security:${NC}"
     echo
     echo -e "${BOLD}1. Secrets vs ConfigMaps:${NC}"
@@ -1037,37 +1037,37 @@ security_education() {
 
 # Playground functions
 basic_kubectl() {
-    print_subheader "📋 BASIC KUBECTL COMMANDS"
+    print_subheader "• BASIC KUBECTL COMMANDS"
     "$SCRIPT_DIR/playground-helpers.sh" basic_kubectl
     pause
 }
 
 explore_resources() {
-    print_subheader "🔍 EXPLORING RESOURCES"
+    print_subheader "EXPLORING RESOURCES"
     "$SCRIPT_DIR/playground-helpers.sh" explore
     pause
 }
 
 deployment_operations() {
-    print_subheader "🚀 DEPLOYMENT OPERATIONS"
+    print_subheader "DEPLOYMENT OPERATIONS"
     "$SCRIPT_DIR/playground-helpers.sh" deployments
     pause
 }
 
 service_management() {
-    print_subheader "🌐 SERVICE MANAGEMENT"
+    print_subheader "• SERVICE MANAGEMENT"
     "$SCRIPT_DIR/playground-helpers.sh" services
     pause
 }
 
 debugging_techniques() {
-    print_subheader "🐛 DEBUGGING TECHNIQUES"
+    print_subheader " DEBUGGING TECHNIQUES"
     "$SCRIPT_DIR/playground-helpers.sh" debugging
     pause
 }
 
 advanced_operations() {
-    print_subheader "💡 ADVANCED OPERATIONS"
+    print_subheader "ADVANCED OPERATIONS"
     echo -e "${BOLD}Advanced Kubernetes Operations:${NC}"
     echo
     echo "1. Rolling Updates and Rollbacks"
@@ -1091,16 +1091,16 @@ advanced_operations() {
 }
 
 practice_scenarios() {
-    print_subheader "🎯 PRACTICE SCENARIOS"
+    print_subheader "PRACTICE SCENARIOS"
     "$SCRIPT_DIR/playground-helpers.sh" scenarios
     pause
 }
 
 # Help and documentation
 show_help() {
-    print_header "❓ HELP & TROUBLESHOOTING"
+    print_header "HELP & TROUBLESHOOTING"
     
-    echo -e "${BOLD}🆘 Common Issues:${NC}"
+    echo -e "${BOLD}Common Issues:${NC}"
     echo
     echo -e "${BOLD}1. Docker not running:${NC}"
     echo "   Solution: Start Docker Desktop"
@@ -1117,7 +1117,7 @@ show_help() {
     echo "   Solution: Verify port forwarding and credentials"
     echo "   Command: curl -u admin:\$(./scripts/manage-credentials.sh --get webui_password) http://localhost:8081"
     echo
-    echo -e "${BOLD}📚 Useful Commands:${NC}"
+    echo -e "${BOLD}Useful Commands:${NC}"
     echo "kubectl get all                    # See all resources"
     echo "kubectl describe <resource>       # Detailed information"
     echo "kubectl logs <pod-name>          # View logs"
@@ -1128,9 +1128,9 @@ show_help() {
 
 # Learning resources
 learning_resources() {
-    print_header "📚 LEARNING RESOURCES"
+    print_header "LEARNING RESOURCES"
     
-    echo -e "${BOLD}🎓 Kubernetes Learning Path:${NC}"
+    echo -e "${BOLD}Kubernetes Learning Path:${NC}"
     echo
     echo -e "${BOLD}Beginner:${NC}"
     echo "• Official Kubernetes Tutorial: https://kubernetes.io/docs/tutorials/"
@@ -1147,7 +1147,7 @@ learning_resources() {
     echo "• Service Mesh (Istio)"
     echo "• GitOps with ArgoCD"
     echo
-    echo -e "${BOLD}📖 This Project's Documentation:${NC}"
+    echo -e "${BOLD}This Project's Documentation:${NC}"
     echo "• README.md - Complete setup guide"
     echo "• SECURITY.md - Security implementation details"
     echo "• scripts/ - All automation tools"
@@ -1182,9 +1182,9 @@ main() {
                 ;;
             9) show_help ;;
             10) 
-                print_header "👋 GOODBYE!"
+                print_header "GOODBYE!"
                 echo -e "${GREEN}Thank you for using the MongoDB on Kind Learning Lab!${NC}"
-                echo "Keep exploring Kubernetes - you're doing great! 🚀"
+                echo "Keep exploring Kubernetes - you're doing great! "
                 echo
                 exit 0
                 ;;
