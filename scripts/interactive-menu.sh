@@ -100,16 +100,17 @@ show_main_menu() {
     echo
     echo -e "${BOLD} 1)${NC} Quick Start - Deploy Everything (Recommended for beginners)"
     echo -e "${BOLD} 2)${NC} Learning Mode - Step-by-step guided deployment"
-    echo -e "${BOLD} 3)${NC} Management Tools - Manage existing deployment"
-    echo -e "${BOLD} 4)${NC} Monitoring & Logs - View cluster status and logs"
-    echo -e "${BOLD} 5)${NC} Security Lab - Learn credential management"
-    echo -e "${BOLD} 6)${NC} Kubernetes Playground - Practice kubectl commands"
-    echo -e "${BOLD} 7)${NC} Learning Resources - Tutorials and documentation"
-    echo -e "${BOLD} 8)${NC} Cleanup - Remove deployment and cluster"
-    echo -e "${BOLD} 9)${NC} Help & Troubleshooting"
-    echo -e "${BOLD}10)${NC} Exit"
+    echo -e "${BOLD} 3)${NC} Cluster Management - Start, stop, status, destroy cluster"
+    echo -e "${BOLD} 4)${NC} Management Tools - Manage existing deployment"
+    echo -e "${BOLD} 5)${NC} Monitoring & Logs - View cluster status and logs"
+    echo -e "${BOLD} 6)${NC} Security Lab - Learn credential management"
+    echo -e "${BOLD} 7)${NC} Kubernetes Playground - Practice kubectl commands"
+    echo -e "${BOLD} 8)${NC} Learning Resources - Tutorials and documentation"
+    echo -e "${BOLD} 9)${NC} Cleanup - Remove deployment and cluster"
+    echo -e "${BOLD}10)${NC} Help & Troubleshooting"
+    echo -e "${BOLD}11)${NC} Exit"
     echo
-    echo -e "${YELLOW}Choose an option [1-10]: ${NC}\c"
+    echo -e "${YELLOW}Choose an option [1-11]: ${NC}\c"
 }
 
 # Function for Quick Start
@@ -1155,6 +1156,654 @@ learning_resources() {
     pause
 }
 
+# Cluster Management Menu
+cluster_management_menu() {
+    while true; do
+        print_header "CLUSTER MANAGEMENT"
+        
+        echo -e "${GREEN}Comprehensive Kind cluster management and control${NC}"
+        echo
+        
+        # Show current cluster status
+        local cluster_status=$(get_cluster_status)
+        echo -e "${BOLD}Current Status:${NC} $cluster_status"
+        echo
+        
+        echo -e "${BOLD}Cluster Management Options:${NC}"
+        echo
+        echo -e "${BOLD}1)${NC} Start Cluster - Create and start the MongoDB cluster"
+        echo -e "${BOLD}2)${NC} Stop Cluster - Stop cluster containers (preserves data)"
+        echo -e "${BOLD}3)${NC} Status Check - Detailed cluster and application status"
+        echo -e "${BOLD}4)${NC} Restart Cluster - Stop and start cluster cleanly"
+        echo -e "${BOLD}5)${NC} Destroy Cluster - Completely remove cluster and data"
+        echo -e "${BOLD}6)${NC} Quick Deploy - Start cluster and deploy applications"
+        echo -e "${BOLD}7)${NC} Cluster Info - Show detailed cluster information"
+        echo -e "${BOLD}8)${NC} Back to Main Menu"
+        echo
+        echo -e "${YELLOW}Choose an option [1-8]: ${NC}\c"
+        
+        read -r choice
+        case $choice in
+            1) start_cluster ;;
+            2) stop_cluster ;;
+            3) cluster_status_check ;;
+            4) restart_cluster ;;
+            5) destroy_cluster ;;
+            6) quick_deploy_cluster ;;
+            7) cluster_info ;;
+            8) break ;;
+            *) print_error "Invalid option. Please choose 1-8." ;;
+        esac
+    done
+}
+
+# Helper function to get cluster status
+get_cluster_status() {
+    if ! command -v kind &> /dev/null; then
+        echo -e "${RED}Kind not installed${NC}"
+        return
+    fi
+    
+    if ! docker info &> /dev/null 2>&1; then
+        echo -e "${RED}Docker not running${NC}"
+        return
+    fi
+    
+    local clusters=$(kind get clusters 2>/dev/null)
+    if echo "$clusters" | grep -q "mongodb-cluster"; then
+        # Check if cluster is actually running
+        if docker ps --format "table {{.Names}}" 2>/dev/null | grep -q "mongodb-cluster"; then
+            # Check if applications are deployed
+            if kubectl get pods -l app=mongodb &>/dev/null 2>&1; then
+                echo -e "${GREEN}Running with applications${NC}"
+            else
+                echo -e "${YELLOW}Running (no applications)${NC}"
+            fi
+        else
+            echo -e "${YELLOW}Created but stopped${NC}"
+        fi
+    else
+        echo -e "${RED}Not created${NC}"
+    fi
+}
+
+# Function to start cluster
+start_cluster() {
+    print_header "START CLUSTER"
+    
+    print_info "Starting Kind cluster for MongoDB deployment..."
+    echo
+    
+    # Check prerequisites
+    if ! check_prerequisites; then
+        pause
+        return 1
+    fi
+    
+    # Check if cluster already exists
+    local clusters=$(kind get clusters 2>/dev/null)
+    if echo "$clusters" | grep -q "mongodb-cluster"; then
+        # Check if it's running
+        if docker ps --format "table {{.Names}}" 2>/dev/null | grep -q "mongodb-cluster"; then
+            print_success "Cluster 'mongodb-cluster' is already running!"
+            show_cluster_summary
+            pause
+            return 0
+        else
+            print_info "Cluster exists but is stopped. Starting containers..."
+            if start_existing_cluster; then
+                print_success "Cluster started successfully!"
+                show_cluster_summary
+            else
+                print_error "Failed to start existing cluster"
+            fi
+            pause
+            return
+        fi
+    fi
+    
+    print_step "Creating new Kind cluster..."
+    echo
+    echo -e "${BOLD}Cluster Configuration:${NC}"
+    echo "• Name: mongodb-cluster"
+    echo "• Nodes: 1 control-plane + 2 workers"
+    echo "• Port mappings: 8081 (MongoDB Express), 27017 (MongoDB)"
+    echo
+    
+    if ask_yes_no "Create cluster with this configuration"; then
+        if kind create cluster --config "$PROJECT_DIR/kind/kind-config.yaml" --name mongodb-cluster; then
+            print_success "Cluster created successfully!"
+            echo
+            print_step "Verifying cluster..."
+            kubectl cluster-info --context kind-mongodb-cluster
+            echo
+            show_cluster_summary
+            
+            if ask_yes_no "Deploy MongoDB applications now"; then
+                deploy_applications
+            fi
+        else
+            print_error "Failed to create cluster"
+        fi
+    fi
+    
+    pause
+}
+
+# Function to stop cluster
+stop_cluster() {
+    print_header "STOP CLUSTER"
+    
+    print_info "This will stop the cluster containers but preserve all data and configuration"
+    echo
+    
+    # Check if cluster exists
+    local clusters=$(kind get clusters 2>/dev/null)
+    if ! echo "$clusters" | grep -q "mongodb-cluster"; then
+        print_warning "No cluster named 'mongodb-cluster' found"
+        pause
+        return 0
+    fi
+    
+    # Check if cluster is running
+    if ! docker ps --format "table {{.Names}}" 2>/dev/null | grep -q "mongodb-cluster"; then
+        print_info "Cluster 'mongodb-cluster' is already stopped"
+        pause
+        return 0
+    fi
+    
+    echo -e "${BOLD}Current cluster status:${NC}"
+    kubectl get nodes --context kind-mongodb-cluster 2>/dev/null || echo "Unable to connect to cluster"
+    echo
+    
+    print_warning "Stopping cluster will:"
+    echo "• Stop all cluster containers"
+    echo "• Preserve all data and configurations"
+    echo "• Allow restart without data loss"
+    echo "• Stop all running applications"
+    echo
+    
+    if ask_yes_no "Stop the cluster"; then
+        print_step "Stopping cluster containers..."
+        
+        # Get all cluster containers
+        local containers=$(docker ps -q --filter "name=mongodb-cluster")
+        if [ -n "$containers" ]; then
+            if docker stop $containers; then
+                print_success "Cluster stopped successfully!"
+                echo
+                print_info "Cluster can be restarted later with 'Start Cluster' option"
+                print_info "All data and configurations are preserved"
+            else
+                print_error "Failed to stop some containers"
+            fi
+        else
+            print_info "No running containers found for mongodb-cluster"
+        fi
+    fi
+    
+    pause
+}
+
+# Function for detailed cluster status check
+cluster_status_check() {
+    print_header "CLUSTER STATUS CHECK"
+    
+    print_step "Performing comprehensive status check..."
+    echo
+    
+    # Check Docker
+    echo -e "${BOLD}1. Docker Status:${NC}"
+    if docker info &> /dev/null; then
+        print_success "Docker is running"
+        echo "   Version: $(docker --version | cut -d' ' -f3 | cut -d',' -f1)"
+    else
+        print_error "Docker is not running"
+        echo
+        pause
+        return 1
+    fi
+    
+    echo
+    
+    # Check Kind
+    echo -e "${BOLD}2. Kind Status:${NC}"
+    if command -v kind &> /dev/null; then
+        print_success "Kind is installed"
+        echo "   Version: $(kind version | grep kind | cut -d' ' -f2)"
+        
+        local clusters=$(kind get clusters 2>/dev/null)
+        echo "   Available clusters: ${clusters:-"None"}"
+    else
+        print_error "Kind is not installed"
+    fi
+    
+    echo
+    
+    # Check specific cluster
+    echo -e "${BOLD}3. MongoDB Cluster Status:${NC}"
+    local clusters=$(kind get clusters 2>/dev/null)
+    if echo "$clusters" | grep -q "mongodb-cluster"; then
+        print_success "Cluster 'mongodb-cluster' exists"
+        
+        # Check if running
+        if docker ps --format "table {{.Names}}" 2>/dev/null | grep -q "mongodb-cluster"; then
+            print_success "Cluster containers are running"
+            
+            # Check nodes
+            echo
+            echo -e "${BOLD}   Cluster Nodes:${NC}"
+            kubectl get nodes --context kind-mongodb-cluster 2>/dev/null || print_error "   Cannot connect to cluster API"
+            
+            # Check system pods
+            echo
+            echo -e "${BOLD}   System Pods:${NC}"
+            kubectl get pods -n kube-system --context kind-mongodb-cluster 2>/dev/null | head -5 || print_error "   Cannot get system pods"
+            
+        else
+            print_warning "Cluster exists but containers are stopped"
+        fi
+    else
+        print_warning "Cluster 'mongodb-cluster' does not exist"
+    fi
+    
+    echo
+    
+    # Check applications if cluster is running
+    if kubectl get nodes --context kind-mongodb-cluster &>/dev/null; then
+        echo -e "${BOLD}4. Application Status:${NC}"
+        
+        # Check MongoDB
+        if kubectl get pods -l app=mongodb --context kind-mongodb-cluster &>/dev/null; then
+            local mongo_status=$(kubectl get pods -l app=mongodb --context kind-mongodb-cluster -o jsonpath='{.items[0].status.phase}' 2>/dev/null)
+            if [ "$mongo_status" = "Running" ]; then
+                print_success "MongoDB is running"
+            else
+                print_warning "MongoDB pod status: ${mongo_status:-"Unknown"}"
+            fi
+        else
+            print_info "MongoDB is not deployed"
+        fi
+        
+        # Check MongoDB Express
+        if kubectl get pods -l app=mongodb-express --context kind-mongodb-cluster &>/dev/null; then
+            local express_status=$(kubectl get pods -l app=mongodb-express --context kind-mongodb-cluster -o jsonpath='{.items[0].status.phase}' 2>/dev/null)
+            if [ "$express_status" = "Running" ]; then
+                print_success "MongoDB Express is running"
+                echo "   Web UI: http://localhost:8081"
+            else
+                print_warning "MongoDB Express pod status: ${express_status:-"Unknown"}"
+            fi
+        else
+            print_info "MongoDB Express is not deployed"
+        fi
+        
+        # Check services
+        echo
+        echo -e "${BOLD}5. Service Status:${NC}"
+        kubectl get services --context kind-mongodb-cluster 2>/dev/null | grep -E "(mongodb|NAME)" || print_info "No MongoDB services found"
+        
+        # Connectivity test
+        echo
+        echo -e "${BOLD}6. Connectivity Test:${NC}"
+        if curl -s --connect-timeout 5 http://localhost:8081 >/dev/null 2>&1; then
+            print_success "MongoDB Express web interface is accessible"
+        else
+            print_warning "MongoDB Express web interface is not accessible"
+        fi
+        
+        if nc -z localhost 27017 2>/dev/null; then
+            print_success "MongoDB port is accessible"
+        else
+            print_warning "MongoDB port is not accessible"
+        fi
+        
+    fi
+    
+    echo
+    show_cluster_summary
+    pause
+}
+
+# Function to restart cluster
+restart_cluster() {
+    print_header "RESTART CLUSTER"
+    
+    print_info "This will cleanly restart the cluster and all applications"
+    echo
+    
+    local clusters=$(kind get clusters 2>/dev/null)
+    if ! echo "$clusters" | grep -q "mongodb-cluster"; then
+        print_warning "No cluster named 'mongodb-cluster' found"
+        print_info "Use 'Start Cluster' to create a new cluster"
+        pause
+        return 0
+    fi
+    
+    print_warning "Restart process:"
+    echo "• Stop all cluster containers"
+    echo "• Start cluster containers"
+    echo "• Wait for cluster to be ready"
+    echo "• Verify applications are running"
+    echo
+    
+    if ask_yes_no "Restart the cluster"; then
+        print_step "Step 1/4: Stopping cluster..."
+        local containers=$(docker ps -q --filter "name=mongodb-cluster")
+        if [ -n "$containers" ]; then
+            docker stop $containers >/dev/null 2>&1
+            print_success "Cluster stopped"
+        else
+            print_info "Cluster was already stopped"
+        fi
+        
+        print_step "Step 2/4: Starting cluster containers..."
+        if start_existing_cluster; then
+            print_success "Cluster containers started"
+        else
+            print_error "Failed to start cluster containers"
+            pause
+            return 1
+        fi
+        
+        print_step "Step 3/4: Waiting for cluster to be ready..."
+        sleep 5
+        local attempts=0
+        while [ $attempts -lt 30 ]; do
+            if kubectl get nodes --context kind-mongodb-cluster &>/dev/null; then
+                print_success "Cluster API is ready"
+                break
+            fi
+            echo -n "."
+            sleep 2
+            attempts=$((attempts + 1))
+        done
+        
+        if [ $attempts -eq 30 ]; then
+            print_error "Cluster did not become ready in time"
+            pause
+            return 1
+        fi
+        
+        print_step "Step 4/4: Verifying applications..."
+        sleep 3
+        if kubectl get pods --context kind-mongodb-cluster &>/dev/null; then
+            kubectl get pods --context kind-mongodb-cluster
+            print_success "Cluster restart completed successfully!"
+        else
+            print_warning "Cluster restarted but applications may need time to start"
+        fi
+        
+        echo
+        show_cluster_summary
+    fi
+    
+    pause
+}
+
+# Function to destroy cluster
+destroy_cluster() {
+    print_header "DESTROY CLUSTER"
+    
+    print_warning "DESTRUCTIVE OPERATION!"
+    echo
+    print_error "This will PERMANENTLY DELETE:"
+    echo "• The entire Kind cluster"
+    echo "• All MongoDB data and databases"
+    echo "• All configurations and secrets"
+    echo "• All persistent volumes and claims"
+    echo "• All applications and services"
+    echo
+    print_warning "This action CANNOT be undone!"
+    echo
+    
+    local clusters=$(kind get clusters 2>/dev/null)
+    if ! echo "$clusters" | grep -q "mongodb-cluster"; then
+        print_info "No cluster named 'mongodb-cluster' found to destroy"
+        pause
+        return 0
+    fi
+    
+    # Show what will be destroyed
+    echo -e "${BOLD}Current cluster contents:${NC}"
+    if kubectl get all --context kind-mongodb-cluster &>/dev/null; then
+        kubectl get all --context kind-mongodb-cluster 2>/dev/null | head -10
+        echo "..."
+    else
+        echo "Unable to connect to cluster (may already be stopped)"
+    fi
+    echo
+    
+    echo -e "${RED}${BOLD}Are you absolutely sure you want to destroy everything?${NC}"
+    if ask_yes_no "Type 'yes' to confirm destruction" "n"; then
+        echo
+        print_warning "Last chance! This will delete ALL data permanently."
+        read -p "Type 'DESTROY' in capital letters to confirm: " confirm
+        
+        if [ "$confirm" = "DESTROY" ]; then
+            print_step "Destroying cluster 'mongodb-cluster'..."
+            
+            if kind delete cluster --name mongodb-cluster; then
+                print_success "Cluster destroyed successfully"
+                echo
+                print_info "All data, configurations, and applications have been permanently deleted"
+                print_info "You can create a fresh cluster using 'Start Cluster' option"
+            else
+                print_error "Failed to destroy cluster completely"
+                print_info "You may need to manually clean up with: docker system prune"
+            fi
+        else
+            print_info "Destruction cancelled - cluster is safe"
+        fi
+    else
+        print_info "Destruction cancelled - cluster is safe"
+    fi
+    
+    pause
+}
+
+# Function for quick deploy
+quick_deploy_cluster() {
+    print_header "QUICK DEPLOY - CLUSTER + APPLICATIONS"
+    
+    print_info "This will create the cluster and deploy all MongoDB applications automatically"
+    echo
+    
+    echo -e "${BOLD}Quick Deploy Process:${NC}"
+    echo "1. Check prerequisites"
+    echo "2. Create/start Kind cluster"
+    echo "3. Initialize secure credentials"
+    echo "4. Deploy MongoDB with persistent storage"
+    echo "5. Deploy MongoDB Express web interface"
+    echo "6. Verify all components are running"
+    echo
+    
+    if ask_yes_no "Start quick deployment"; then
+        # Check prerequisites first
+        if ! check_prerequisites; then
+            pause
+            return 1
+        fi
+        
+        # Start or create cluster
+        print_step "Step 1: Ensuring cluster is running..."
+        local clusters=$(kind get clusters 2>/dev/null)
+        if ! echo "$clusters" | grep -q "mongodb-cluster"; then
+            print_info "Creating new cluster..."
+            if ! kind create cluster --config "$PROJECT_DIR/kind/kind-config.yaml" --name mongodb-cluster; then
+                print_error "Failed to create cluster"
+                pause
+                return 1
+            fi
+        elif ! docker ps --format "table {{.Names}}" 2>/dev/null | grep -q "mongodb-cluster"; then
+            print_info "Starting existing cluster..."
+            if ! start_existing_cluster; then
+                print_error "Failed to start cluster"
+                pause
+                return 1
+            fi
+        fi
+        print_success "Cluster is ready"
+        
+        # Deploy applications
+        print_step "Step 2: Deploying applications..."
+        if deploy_applications; then
+            print_success "Quick deployment completed successfully!"
+            echo
+            show_cluster_summary
+            show_access_info
+        else
+            print_error "Deployment failed"
+        fi
+    fi
+    
+    pause
+}
+
+# Function to show cluster info
+cluster_info() {
+    print_header "DETAILED CLUSTER INFORMATION"
+    
+    if ! check_cluster_exists; then
+        print_warning "No MongoDB cluster found"
+        pause
+        return 0
+    fi
+    
+    echo -e "${BOLD}Cluster Configuration:${NC}"
+    echo "• Name: mongodb-cluster"
+    echo "• Type: Kind (Kubernetes in Docker)"
+    echo "• Config: $(realpath "$PROJECT_DIR/kind/kind-config.yaml")"
+    echo
+    
+    if kubectl get nodes --context kind-mongodb-cluster &>/dev/null; then
+        echo -e "${BOLD}Nodes:${NC}"
+        kubectl get nodes --context kind-mongodb-cluster -o wide
+        echo
+        
+        echo -e "${BOLD}Cluster Info:${NC}"
+        kubectl cluster-info --context kind-mongodb-cluster
+        echo
+        
+        echo -e "${BOLD}System Resources:${NC}"
+        echo "Namespaces:"
+        kubectl get namespaces --context kind-mongodb-cluster
+        echo
+        
+        echo -e "${BOLD}Storage:${NC}"
+        kubectl get pv,pvc --context kind-mongodb-cluster 2>/dev/null || echo "No persistent volumes found"
+        echo
+        
+        echo -e "${BOLD}Network:${NC}"
+        kubectl get services --context kind-mongodb-cluster
+        echo
+        
+        if kubectl get pods --context kind-mongodb-cluster &>/dev/null; then
+            echo -e "${BOLD}Applications:${NC}"
+            kubectl get pods -o wide --context kind-mongodb-cluster
+        fi
+    else
+        print_warning "Cannot connect to cluster API"
+    fi
+    
+    pause
+}
+
+# Helper function to check prerequisites
+check_prerequisites() {
+    local all_good=true
+    
+    print_step "Checking prerequisites..."
+    
+    # Check Docker
+    if ! docker info &> /dev/null; then
+        print_error "Docker is not running. Please start Docker Desktop"
+        all_good=false
+    else
+        print_success "Docker is running"
+    fi
+    
+    # Check Kind
+    if ! command -v kind &> /dev/null; then
+        print_error "Kind is not installed. Install with: brew install kind"
+        all_good=false
+    else
+        print_success "Kind is available"
+    fi
+    
+    # Check kubectl
+    if ! command -v kubectl &> /dev/null; then
+        print_error "kubectl is not installed. Install with: brew install kubectl"
+        all_good=false
+    else
+        print_success "kubectl is available"
+    fi
+    
+    if [ "$all_good" = false ]; then
+        echo
+        print_error "Please install missing prerequisites and try again"
+        return 1
+    fi
+    
+    return 0
+}
+
+# Helper function to check if cluster exists
+check_cluster_exists() {
+    local clusters=$(kind get clusters 2>/dev/null)
+    echo "$clusters" | grep -q "mongodb-cluster"
+}
+
+# Helper function to start existing cluster
+start_existing_cluster() {
+    local containers=$(docker ps -a -q --filter "name=mongodb-cluster")
+    if [ -n "$containers" ]; then
+        docker start $containers >/dev/null 2>&1
+        sleep 3
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Helper function to deploy applications
+deploy_applications() {
+    # Initialize credentials if not exists
+    if [ ! -f "$PROJECT_DIR/.credentials/encrypted_creds.enc" ]; then
+        print_step "Initializing secure credentials..."
+        "$SCRIPT_DIR/manage-credentials.sh" --init
+    fi
+    
+    # Deploy using the existing deploy script
+    print_step "Deploying MongoDB applications..."
+    if "$SCRIPT_DIR/deploy.sh"; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Helper function to show cluster summary
+show_cluster_summary() {
+    echo -e "${BOLD}Cluster Summary:${NC}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    
+    # Cluster status
+    local status=$(get_cluster_status)
+    echo "Status: $status"
+    
+    # Node count if running
+    if kubectl get nodes --context kind-mongodb-cluster &>/dev/null; then
+        local node_count=$(kubectl get nodes --context kind-mongodb-cluster --no-headers 2>/dev/null | wc -l)
+        echo "Nodes: $node_count"
+        
+        local pod_count=$(kubectl get pods --context kind-mongodb-cluster --no-headers 2>/dev/null | wc -l)
+        echo "Pods: $pod_count"
+    fi
+    
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+}
+
 # Main execution function
 main() {
     # Check if we're in the right directory
@@ -1170,18 +1819,19 @@ main() {
         case $choice in
             1) quick_start ;;
             2) learning_mode ;;
-            3) management_menu ;;
-            4) monitoring_menu ;;
-            5) security_menu ;;
-            6) playground_menu ;;
-            7) learning_resources ;;
-            8) 
+            3) cluster_management_menu ;;
+            4) management_menu ;;
+            5) monitoring_menu ;;
+            6) security_menu ;;
+            7) playground_menu ;;
+            8) learning_resources ;;
+            9) 
                 if ask_yes_no "Are you sure you want to cleanup everything"; then
                     "$SCRIPT_DIR/cleanup.sh"
                 fi
                 ;;
-            9) show_help ;;
-            10) 
+            10) show_help ;;
+            11) 
                 print_header "GOODBYE!"
                 echo -e "${GREEN}Thank you for using the MongoDB on Kind Learning Lab!${NC}"
                 echo "Keep exploring Kubernetes - you're doing great! "
@@ -1189,7 +1839,7 @@ main() {
                 exit 0
                 ;;
             *)
-                print_error "Invalid option. Please choose 1-10."
+                print_error "Invalid option. Please choose 1-11."
                 sleep 2
                 ;;
         esac
