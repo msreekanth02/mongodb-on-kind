@@ -106,11 +106,12 @@ show_main_menu() {
     echo -e "${BOLD} 6)${NC} Security Lab - Learn credential management"
     echo -e "${BOLD} 7)${NC} Kubernetes Playground - Practice kubectl commands"
     echo -e "${BOLD} 8)${NC} Learning Resources - Tutorials and documentation"
-    echo -e "${BOLD} 9)${NC} Cleanup - Remove deployment and cluster"
-    echo -e "${BOLD}10)${NC} Help & Troubleshooting"
-    echo -e "${BOLD}11)${NC} Exit"
+    echo -e "${BOLD} 9)${NC} Sample Data - Create sample databases for MongoDB Express exploration"
+    echo -e "${BOLD}10)${NC} Cleanup - Remove deployment and cluster"
+    echo -e "${BOLD}11)${NC} Help & Troubleshooting"
+    echo -e "${BOLD}12)${NC} Exit"
     echo
-    echo -e "${YELLOW}Choose an option [1-11]: ${NC}\c"
+    echo -e "${YELLOW}Choose an option [1-12]: ${NC}\c"
 }
 
 # Function for Quick Start
@@ -660,6 +661,289 @@ playground_menu() {
             *) print_error "Invalid option. Please choose 1-8." ;;
         esac
     done
+}
+
+# Sample Data Menu
+sample_data_menu() {
+    while true; do
+        print_header "SAMPLE DATA FOR MONGODB EXPRESS EXPLORATION"
+        
+        echo -e "${GREEN}Create and explore sample databases to learn MongoDB concepts${NC}"
+        echo
+        
+        # Check if cluster is running
+        if ! kubectl get pods -l app=mongodb &>/dev/null; then
+            print_error "MongoDB cluster not found. Please deploy the cluster first."
+            echo
+            echo -e "${BOLD}Available Options:${NC}"
+            echo -e "${BOLD}1)${NC} Deploy Cluster First - Go to Quick Start"
+            echo -e "${BOLD}2)${NC} Back to Main Menu"
+            echo
+            echo -e "${YELLOW}Choose an option [1-2]: ${NC}\c"
+            
+            read -r choice
+            case $choice in
+                1) quick_start ;;
+                2) break ;;
+                *) print_error "Invalid option. Please choose 1-2." ;;
+            esac
+            continue
+        fi
+        
+        # Show current databases
+        local mongo_pod
+        mongo_pod=$(kubectl get pods -l app=mongodb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+        
+        if [[ -n "$mongo_pod" ]] && kubectl get pod "$mongo_pod" &>/dev/null; then
+            local root_password
+            root_password=$("$SCRIPT_DIR/manage-credentials.sh" --get mongodb_root_password 2>/dev/null)
+            
+            if [[ -n "$root_password" ]]; then
+                echo -e "${BOLD}Current Databases:${NC}"
+                kubectl exec "$mongo_pod" -- mongosh -u admin -p "$root_password" --eval "
+                    db.adminCommand('listDatabases').databases.forEach(function(db) {
+                        if (db.name !== 'admin' && db.name !== 'config' && db.name !== 'local') {
+                            print('  • ' + db.name);
+                        }
+                    });
+                " 2>/dev/null | grep "•" || echo "  (No user databases found)"
+                echo
+            fi
+        fi
+        
+        echo -e "${BOLD}Sample Data Options:${NC}"
+        echo
+        echo -e "${BOLD}1)${NC} Create Sample Databases - Learning and E-commerce data"
+        echo -e "${BOLD}2)${NC} View Database Exploration Guide - How to use MongoDB Express"
+        echo -e "${BOLD}3)${NC} Show Sample Queries - Practice MongoDB commands"
+        echo -e "${BOLD}4)${NC} Access MongoDB Express - Open web interface"
+        echo -e "${BOLD}5)${NC} Remove Sample Data - Clean up databases"
+        echo -e "${BOLD}6)${NC} Back to Main Menu"
+        echo
+        echo -e "${YELLOW}Choose an option [1-6]: ${NC}\c"
+        
+        read -r choice
+        case $choice in
+            1) create_sample_databases ;;
+            2) show_exploration_guide ;;
+            3) show_sample_queries ;;
+            4) access_mongodb_express ;;
+            5) remove_sample_data ;;
+            6) break ;;
+            *) print_error "Invalid option. Please choose 1-6." ;;
+        esac
+    done
+}
+
+# Function to create sample databases
+create_sample_databases() {
+    print_header "CREATING SAMPLE DATABASES"
+    
+    echo -e "${GREEN}This will create two educational databases:${NC}"
+    echo
+    echo -e "${BOLD}1. learningdb${NC} - Educational data"
+    echo "   • students collection (student records with GPA, major, etc.)"
+    echo "   • courses collection (course information, schedules, instructors)"
+    echo
+    echo -e "${BOLD}2. ecommerce${NC} - Business data"
+    echo "   • products collection (product catalog with prices, ratings)"
+    echo "   • customers collection (customer profiles and preferences)"
+    echo "   • orders collection (order history and status)"
+    echo
+    
+    if ask_yes_no "Create these sample databases"; then
+        print_step "Running sample data creation script..."
+        
+        if "$SCRIPT_DIR/create-sample-data.sh"; then
+            print_success "Sample databases created successfully!"
+            echo
+            echo -e "${BOLD}Next Steps:${NC}"
+            echo "1. Access MongoDB Express at: http://localhost:8081"
+            echo "2. Use option 4 to open the web interface automatically"
+            echo "3. Explore the databases and collections"
+            echo "4. Try the sample queries from option 3"
+        else
+            print_error "Failed to create sample databases"
+        fi
+    fi
+    
+    pause
+}
+
+# Function to show exploration guide
+show_exploration_guide() {
+    print_header "MONGODB EXPRESS EXPLORATION GUIDE"
+    
+    echo -e "${CYAN}📖 How to Explore Sample Data in MongoDB Express:${NC}"
+    echo
+    
+    echo -e "${BOLD}1. Access the Web Interface:${NC}"
+    echo "   • URL: http://localhost:8081"
+    echo "   • Username: admin"
+    local webui_password
+    webui_password=$("$SCRIPT_DIR/manage-credentials.sh" --get webui_password 2>/dev/null)
+    echo "   • Password: ${webui_password:-'(Run: ./scripts/manage-credentials.sh --get webui_password)'}"
+    echo
+    
+    echo -e "${BOLD}2. Navigate the Interface:${NC}"
+    echo "   • Click on database names in the left sidebar"
+    echo "   • Click on collection names to view documents"
+    echo "   • Use 'View Documents' to see actual data"
+    echo "   • Click 'New Document' to add records"
+    echo "   • Use the query interface to filter data"
+    echo
+    
+    echo -e "${BOLD}3. Learning Scenarios:${NC}"
+    echo "   📚 ${BOLD}Student Management (learningdb):${NC}"
+    echo "      • Find students by major or GPA"
+    echo "      • Look up course schedules and instructors"
+    echo "      • Edit student information"
+    echo
+    echo "   🛒 ${BOLD}E-commerce Analytics (ecommerce):${NC}"
+    echo "      • Browse product catalog and prices"
+    echo "      • View customer profiles and orders"
+    echo "      • Analyze order patterns and revenue"
+    echo
+    
+    echo -e "${BOLD}4. MongoDB Express Features:${NC}"
+    echo "   • Query Builder: Create filters without typing JSON"
+    echo "   • Document Editor: Modify records in a form interface"
+    echo "   • Index Viewer: See database performance optimizations"
+    echo "   • Import/Export: Save data or load new datasets"
+    echo
+    
+    pause
+}
+
+# Function to show sample queries
+show_sample_queries() {
+    print_header "SAMPLE MONGODB QUERIES FOR PRACTICE"
+    
+    echo -e "${CYAN}Copy these queries into MongoDB Express query interface:${NC}"
+    echo
+    
+    echo -e "${BOLD}📚 Learning Database Queries:${NC}"
+    echo
+    echo -e "${YELLOW}// Find Computer Science students:${NC}"
+    echo '{ "major": "Computer Science" }'
+    echo
+    echo -e "${YELLOW}// Find students with high GPA:${NC}"
+    echo '{ "gpa": { "$gte": 3.8 } }'
+    echo
+    echo -e "${YELLOW}// Find courses with available spots:${NC}"
+    echo '{ "$expr": { "$lt": ["$enrolled_students", "$max_capacity"] } }'
+    echo
+    echo -e "${YELLOW}// Find active students in California:${NC}"
+    echo '{ "is_active": true, "address.state": "CA" }'
+    echo
+    
+    echo -e "${BOLD}🛒 E-commerce Database Queries:${NC}"
+    echo
+    echo -e "${YELLOW}// Find Electronics products:${NC}"
+    echo '{ "category": "Electronics" }'
+    echo
+    echo -e "${YELLOW}// Find products under $50:${NC}"
+    echo '{ "price": { "$lt": 50 } }'
+    echo
+    echo -e "${YELLOW}// Find highly-rated products:${NC}"
+    echo '{ "ratings.average": { "$gte": 4.5 } }'
+    echo
+    echo -e "${YELLOW}// Find delivered orders:${NC}"
+    echo '{ "status": "delivered" }'
+    echo
+    echo -e "${YELLOW}// Find large orders (over $200):${NC}"
+    echo '{ "order_total": { "$gt": 200 } }'
+    echo
+    
+    echo -e "${BOLD}💡 Query Tips:${NC}"
+    echo "• Use \$gt, \$lt, \$gte, \$lte for number comparisons"
+    echo "• Use \$regex for text pattern matching"
+    echo "• Combine conditions with \$and, \$or"
+    echo "• Access nested fields with dot notation (e.g., 'address.city')"
+    echo
+    
+    pause
+}
+
+# Function to access MongoDB Express
+access_mongodb_express() {
+    print_header "MONGODB EXPRESS WEB ACCESS"
+    
+    echo -e "${GREEN}Opening MongoDB Express in your default browser...${NC}"
+    echo
+    
+    # Check if port forwarding is active
+    if ! pgrep -f "kubectl port-forward.*8081" > /dev/null; then
+        print_step "Starting port forwarding for MongoDB Express..."
+        kubectl port-forward service/mongodb-express-service 8081:8081 > /dev/null 2>&1 &
+        sleep 3
+    fi
+    
+    # Get credentials
+    local webui_password
+    webui_password=$("$SCRIPT_DIR/manage-credentials.sh" --get webui_password 2>/dev/null)
+    
+    echo -e "${BOLD}Access Information:${NC}"
+    echo "• URL: http://localhost:8081"
+    echo "• Username: admin"
+    echo "• Password: $webui_password"
+    echo
+    echo -e "${BOLD}What to do next:${NC}"
+    echo "1. Click on 'learningdb' or 'ecommerce' in the left sidebar"
+    echo "2. Explore collections (students, courses, products, etc.)"
+    echo "3. Try the sample queries from the previous menu"
+    echo "4. Practice creating, reading, updating, and deleting documents"
+    echo
+    
+    # Try to open in browser
+    if command -v open >/dev/null 2>&1; then
+        open "http://localhost:8081" 2>/dev/null || true
+        print_success "MongoDB Express should open in your default browser"
+    else
+        print_warning "Please open http://localhost:8081 manually in your browser"
+    fi
+    
+    pause
+}
+
+# Function to remove sample data
+remove_sample_data() {
+    print_header "REMOVE SAMPLE DATABASES"
+    
+    echo -e "${YELLOW}This will remove the sample databases:${NC}"
+    echo "• learningdb (students and courses)"
+    echo "• ecommerce (products, customers, orders)"
+    echo
+    echo -e "${RED}Warning: This action cannot be undone!${NC}"
+    echo
+    
+    if ask_yes_no "Remove sample databases"; then
+        local mongo_pod
+        mongo_pod=$(kubectl get pods -l app=mongodb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+        
+        if [[ -n "$mongo_pod" ]]; then
+            local root_password
+            root_password=$("$SCRIPT_DIR/manage-credentials.sh" --get mongodb_root_password 2>/dev/null)
+            
+            if [[ -n "$root_password" ]]; then
+                print_step "Removing sample databases..."
+                
+                kubectl exec "$mongo_pod" -- mongosh -u admin -p "$root_password" --eval "
+                    db.getSiblingDB('learningdb').dropDatabase();
+                    db.getSiblingDB('ecommerce').dropDatabase();
+                    print('Sample databases removed successfully');
+                " 2>/dev/null
+                
+                print_success "Sample databases have been removed"
+            else
+                print_error "Unable to retrieve MongoDB credentials"
+            fi
+        else
+            print_error "MongoDB pod not found"
+        fi
+    fi
+    
+    pause
 }
 
 # Show access information
@@ -1825,13 +2109,14 @@ main() {
             6) security_menu ;;
             7) playground_menu ;;
             8) learning_resources ;;
-            9) 
+            9) sample_data_menu ;;
+            10) 
                 if ask_yes_no "Are you sure you want to cleanup everything"; then
                     "$SCRIPT_DIR/cleanup.sh"
                 fi
                 ;;
-            10) show_help ;;
-            11) 
+            11) show_help ;;
+            12) 
                 print_header "GOODBYE!"
                 echo -e "${GREEN}Thank you for using the MongoDB on Kind Learning Lab!${NC}"
                 echo "Keep exploring Kubernetes - you're doing great! "
@@ -1839,7 +2124,7 @@ main() {
                 exit 0
                 ;;
             *)
-                print_error "Invalid option. Please choose 1-11."
+                print_error "Invalid option. Please choose 1-12."
                 sleep 2
                 ;;
         esac
