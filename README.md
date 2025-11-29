@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # MongoDB on Kind Kubernetes Cluster - Comprehensive Learning Lab
 
 This project creates a complete MongoDB deployment on a Kind (Kubernetes in Docker) cluster with MongoDB Express as a web interface. The setup includes persistent storage, enterprise-grade security configurations, interactive learning tools, and comprehensive automation scripts for educational purposes.
